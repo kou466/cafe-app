@@ -9,7 +9,7 @@ sqlalchemy==2.0.41
 alembic==1.16.2
 # MySQL
 PyMySQL==1.1.1
-# PostgreSQL (옵션)
+# PostgreSQL (optional)
 # psycopg2-binary==2.9.10
 
 # === Authentication & Security ===
