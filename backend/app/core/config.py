@@ -2,7 +2,7 @@
 Application Configuration Module
 
 환경 변수를 통한 중앙 집중식 설정 관리
-개발, 테스트, 프로덕션 환경 분리 지원
+OCI MySQL 인스턴스 전용 설정
 """
 from typing import List, Optional, Union
 from pydantic_settings import BaseSettings
@@ -27,16 +27,12 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
     
-    # === 데이터베이스 설정 ===
-    # SQLite (기본값)
-    DATABASE_URL: Optional[str] = None
-    
-    # MySQL 설정
-    MYSQL_HOST: Optional[str] = None
+    # === MySQL 데이터베이스 설정 (필수) ===
+    MYSQL_HOST: str
     MYSQL_PORT: int = 3306
-    MYSQL_USER: Optional[str] = None
-    MYSQL_PASSWORD: Optional[str] = None
-    MYSQL_DATABASE: Optional[str] = None
+    MYSQL_USER: str
+    MYSQL_PASSWORD: str
+    MYSQL_DATABASE: str
     
     # 데이터베이스 풀 설정
     DB_POOL_SIZE: int = 5
@@ -74,19 +70,11 @@ class Settings(BaseSettings):
     
     @property
     def database_url(self) -> str:
-        """데이터베이스 URL 생성"""
-        # MySQL 설정이 있으면 MySQL 사용
-        if all([self.MYSQL_HOST, self.MYSQL_USER, self.MYSQL_PASSWORD, self.MYSQL_DATABASE]):
-            return (
-                f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@"
-                f"{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}?charset=utf8mb4"
-            )
-        # 환경별 SQLite 데이터베이스
-        if self.DATABASE_URL:
-            return self.DATABASE_URL
-        
-        db_file = f"cafe_{self.ENVIRONMENT}.db"
-        return f"sqlite:///./db/{db_file}"
+        """MySQL 데이터베이스 URL 생성"""
+        return (
+            f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@"
+            f"{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}?charset=utf8mb4"
+        )
     
     @property
     def is_development(self) -> bool:
@@ -103,10 +91,12 @@ class Settings(BaseSettings):
         path.mkdir(parents=True, exist_ok=True)
         return path
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+        "extra": "allow"  # 추가 필드 허용
+    }
 
 # 설정 인스턴스 생성
 settings = Settings() 
