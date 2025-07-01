@@ -85,8 +85,8 @@ class Settings(BaseSettings):
         if self.DATABASE_URL:
             return self.DATABASE_URL
         
-        db_file = f"cafe_{self.ENVIRONMENT}.db"
-        return f"sqlite:///./db/{db_file}"
+        # 임시로 cafe.db 사용
+        return "sqlite:///./cafe.db"
     
     @property
     def is_development(self) -> bool:
@@ -103,10 +103,12 @@ class Settings(BaseSettings):
         path.mkdir(parents=True, exist_ok=True)
         return path
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+        "extra": "allow"  # 추가 필드 허용
+    }
 
 # 설정 인스턴스 생성
 settings = Settings() 

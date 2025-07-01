@@ -1,8 +1,6 @@
 # 카페 웹사이트 프로젝트 설정 가이드
 
-## 🏗️ 프로젝트 구조
-
-```
+## 🏗️ 프로젝트 구조```
 begin_esp/
 ├── backend/                 # FastAPI 백엔드
 │   ├── app/
@@ -129,3 +127,4 @@ allow_origins=["http://localhost:3000"]  # 프론트엔드 URL
 ### API 문서 확인
 - http://localhost:8000/docs (Swagger UI)
 - http://localhost:8000/redoc (ReDoc) 
+
